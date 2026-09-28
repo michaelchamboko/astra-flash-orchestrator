@@ -1,25 +1,25 @@
 # Astra Flash Orchestrator
 
-**Save Astra for the decisions that need it. Let DeepSeek V4.1 Flash do the volume.**
+**Save Astra for the decisions. Route implementation to the worker you choose.**
 
 ![Astra Flash Orchestrator measured efficiency](docs/assets/astra-savings-v2.svg)
 
 A personal Codex skill designed to preserve Astra usage without giving up Astra's
 judgment. Astra stays responsible for planning, architecture, high-stakes
-decisions and final review. DeepSeek V4.1 Flash takes the high-volume work:
+decisions and final review. The configured worker takes the high-volume work:
 repository discovery, implementation, testing, debugging and routine verification.
 
 Bring an existing plan or start with a feature request. The workflow turns it
-into coherent implementation bundles, sends those bundles to Flash, then returns
+into coherent implementation bundles, sends those bundles to the selected worker, then returns
 the completed patch and evidence to Astra for one focused acceptance pass.
 
 > **Status:** early release. Offline installation tests pass, and the workflow has completed a measured local field build. Results below describe that run, not guaranteed savings. A new installation still needs runtime routing verification on its first authorized task. Installation never runs paid inference.
 
 ## Measured efficiency
 
-In one substantial field build, Astra Flash Orchestrator used **98.9% less Astra
+In one substantial field build using DeepSeek V4.1 Flash, Astra Flash Orchestrator used **98.9% less Astra
 input per 1,000 implementation and test lines** than the all-Astra baseline. It
-did that by moving the implementation loop—not the important decisions—to Flash.
+did that by moving the implementation loop—not the important decisions—to the worker.
 Total API-equivalent compute per 1,000 lines was **97.0–97.7% lower**, while the
 measured phase produced 39% more implementation and test lines.
 
@@ -38,7 +38,7 @@ much leverage:
 | Output | $50.00 | $0.60–$1.20 | 42–83× |
 
 Astra does not have a public API SKU; its values above are API-equivalent
-estimates, not ChatGPT or Codex subscription charges. Flash values use published
+estimates, not ChatGPT or Codex subscription charges. DeepSeek values use published
 off-peak and peak API rates. See the [benchmark methodology](docs/BENCHMARK.md)
 for sources, exact measurements and limitations.
 
@@ -46,7 +46,7 @@ for sources, exact measurements and limitations.
 
 ```text
 Astra  →  scope + design + task brief
-Flash  →  implement + test + report
+Worker →  implement + test + report
 Astra  →  review + verify + accept or request fixes
        →  integrate + checkpoint + next task
 ```
@@ -55,23 +55,23 @@ Astra  →  review + verify + accept or request fixes
 - **Coherent assignments:** one feature slice can include many edit/test/fix steps.
 - **Focused Astra root:** normally one planning batch, one dispatch, one wait, one
   batched acceptance review and one final response.
-- **Worker-owned execution:** Flash handles in-scope discovery, implementation,
+- **Worker-owned execution:** the configured worker handles in-scope discovery, implementation,
   testing, debugging and routine browser/visual QA without progress polling.
 - **Review before acceptance:** the builder submits evidence; Astra decides whether it is complete.
 - **Existing plans welcome:** works with repository plans, Superpowers/GSD artifacts, or the included templates.
 - **Controlled parallel work:** one writer by default; two only with independent tasks and verified separate workspaces.
 - **Reversible installation:** dry run, backups and a guarded undo receipt.
 
-This is workflow guidance, not a deterministic scheduler, a security sandbox, or a guarantee of model quality or cost savings. It is independent of OpenAI, DeepSeek and Codex Router.
+This is workflow guidance, not a deterministic scheduler, a security sandbox, or a guarantee of model quality or cost savings. It is independent of OpenAI and Codex Router.
 
 ### One orchestration workflow
 
 There is no mode setting or mode-switch command. The package always uses the
-usage-saving Astra → Flash → Astra workflow for substantial implementation.
+usage-saving Astra → worker → Astra workflow for substantial implementation.
 
 Three routing outcomes remain intentionally different:
 
-- Substantial implementation uses Astra to plan and review while Flash builds.
+- Substantial implementation uses Astra to plan and review while the selected worker builds.
 - Trivial work and explicit single-agent requests stay with the root session.
 - Concrete security, architecture, payments, tenancy, secrets, migration or
   production risk can justify targeted additional Astra review.
@@ -85,7 +85,7 @@ Before installing, you need:
 1. A Codex client that supports native subagents and standalone custom agent TOML files under `$CODEX_HOME/agents/`.
 2. GPT-6 Astra selected as the root model.
 3. Python **3.11 or newer**. No third-party Python dependencies are needed.
-4. An existing [Codex Router installation](https://github.com/duolahypercho/codex-router), configured and authenticated for one reviewed DeepSeek V4.1 Flash route below.
+4. An existing [Codex Router installation](https://github.com/duolahypercho/codex-router), configured and authenticated for one reviewed worker route below.
 5. A local Codex model catalog advertising that exact route with `multi_agent_version: "v2"`.
 
 | Provider | Worker route |
@@ -96,6 +96,7 @@ Before installing, you need:
 | Command Code | `commandcode/deepseek-v4.1-flash` |
 | Nous Research | `nousresearch/deepseek-v4.1-flash` |
 | Ollama Cloud | `ollama-cloud/deepseek-v4.1-flash` |
+| Qwen3.8 Flash (Alibaba Model Studio Plan) | `qwen-plan/qwen3.8-flash` |
 
 Provider credentials are entered by you through Codex Router's private local
 prompt before installing this package. Never paste an API key into an assistant
@@ -154,6 +155,22 @@ python3 -B install.py --worker-route openrouter/deepseek-v4.1-flash --apply
 The option selects an existing catalog route; it does not configure the provider,
 collect a key, certify the model or make an inference request.
 
+For Qwen3.8 Flash, first configure the Router's `qwen-plan` credential using its
+private prompt (`./bin/provider-key qwen-plan set` on macOS/Linux or
+the Router's documented private credential flow on Windows, from the Router
+installation). Then select the exact Qwen route:
+
+```sh
+python3 -B install.py --worker-route qwen-plan/qwen3.8-flash
+python3 -B install.py --worker-route qwen-plan/qwen3.8-flash --apply
+```
+
+The Router docs identify `qwen-plan` as an Alibaba Model Studio plan API-key
+provider using `QWEN_PLAN_API_KEY` (or `DASHSCOPE_API_KEY`) and the Token Plan
+compatible-mode endpoint. The private key prompt is preferred; never paste a
+key into assistant chat. Router setup and key entry are separate from this
+package installer.
+
 ### With Codex
 
 Ask Codex:
@@ -180,7 +197,7 @@ For a nondefault profile, pass `--profile PROFILE` to the dry run, apply and doc
 | Location | Installed content |
 | --- | --- |
 | `~/.agents/skills/astra-flash-orchestrator/` | Skill, references, templates, doctor, plan validator and routing binding |
-| `$CODEX_HOME/agents/astra_flash_builder.toml` | Native builder pinned to Flash; nested agents disabled |
+| `$CODEX_HOME/agents/astra_flash_builder.toml` | Native builder pinned to the selected worker; nested agents disabled |
 | `$CODEX_HOME/AGENTS.md` | A marked, scoped workflow policy block |
 | `$CODEX_HOME/astra-flash-install-backups/` | Original files and an undo receipt |
 
@@ -195,7 +212,7 @@ Root model/effort, provider configuration, authentication and existing permissio
 ```text
 $astra-flash-orchestrator Use the existing plan in docs/plan.md to implement
 this feature. Keep Astra focused on planning and final review. Use one installed
-Flash builder for a coherent implementation and verification bundle. Do not poll
+worker for a coherent implementation and verification bundle. Do not poll
 the worker; review its completed patch and evidence in one batched pass.
 ```
 

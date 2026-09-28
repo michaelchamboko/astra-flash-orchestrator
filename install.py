@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preview/install the Astra + Flash skill without changing Codex model/provider settings."""
+"""Preview/install the Astra + worker skill without changing Codex model/provider settings."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -100,7 +100,7 @@ def plan_changes(home: Path, codex_home: Path, report: dict, with_policy: bool, 
     # JSON basic strings are valid TOML basic strings for these generated values.
     role = (
         f'name = {json.dumps(ROLE)}\n'
-        'description = "Implement an Astra-approved task bundle using the installed Flash route; never orchestrate or self-approve."\n'
+        'description = "Implement an Astra-approved task bundle using the installed worker route; never orchestrate or self-approve."\n'
         f'model = {json.dumps(report["worker_model"])}\n'
     )
     if report["worker_effort"]:
@@ -228,7 +228,7 @@ def main() -> int:
     parser.add_argument(
         "--worker-route",
         choices=SUPPORTED_ROUTES,
-        help="pin one reviewed DeepSeek V4.1 Flash provider route (default: existing binding, then direct DeepSeek API)",
+        help="pin one reviewed worker route (default: existing binding, then direct DeepSeek API)",
     )
     parser.add_argument("--undo", type=Path, metavar="RECEIPT", help="preview restoration from an installation receipt; combine with --apply to restore")
     args = parser.parse_args()

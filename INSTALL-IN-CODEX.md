@@ -44,7 +44,7 @@ I authorize installation of the personal skill, native astra_flash_builder role,
 and scoped managed AGENTS policy exception. Retain repository restrictions,
 explicit no-delegation instructions and managed security controls.
 
-The role must pin Flash, inherit sandbox/approvals and disable nested agents.
+The role must pin the selected worker route, inherit sandbox/approvals and disable nested agents.
 Do not invoke an external worker CLI. Run the static doctor after installation.
 An optional local catalog GET may fail when authentication is required; do not
 read or alter credentials to make it pass, or present it as inference evidence.

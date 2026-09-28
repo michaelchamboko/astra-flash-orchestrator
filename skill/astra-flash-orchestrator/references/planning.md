@@ -56,7 +56,7 @@ Supply the expected behavior, non-goals, relevant context, exact interface shape
 allowed paths, forbidden changes, test cases, verification commands, prerequisites,
 completion report, and stop conditions. Include short examples or pseudocode when
 a tricky contract needs them. Do not write all implementation code or dictate
-every token; reserve implementation discretion for Flash inside the contract.
+every token; reserve implementation discretion for the worker inside the contract.
 
 A long worker run should mean sustained execution of a clear assignment, not an
 unbounded self-directed project. Require a checkpoint when interrupted or blocked,
@@ -64,3 +64,9 @@ and otherwise expect one completion report after the worker's internal test/fix 
 routine UI-validation loop. Let the host's continuation facilities carry the same
 assignment forward. Long context capacity is not a reason to send every file or
 every past message.
+## Plan executor compatibility
+
+In the plan schema, `executor: "flash"` and `max_flash_workers` are retained
+legacy identifiers for the configured native worker role. They do not select a
+model or provider; the installed role's route binding does that. Use `astra` for
+root-owned and sensitive work.

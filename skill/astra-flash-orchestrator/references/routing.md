@@ -6,12 +6,22 @@ The installed setup has three separate jobs:
 2. Codex Router forwards the selected child route to its pinned provider.
 3. This skill tells Astra when to plan, delegate, review, and integrate.
 
-As documented on September 20, 2026, the vendor API's `deepseek-flash` name
-corresponds to V4.1 Flash. Codex Router exposes reviewed routes through DeepSeek,
-OpenRouter, opencode Go, Command Code, Nous Research and Ollama Cloud. The
-installed `routing.json` records the exact selected route and provider. Do not
-substitute an upstream vendor name in the role's model field. See `sources.md`
-for the public references.
+The direct DeepSeek API route remains the default for backward compatibility.
+An explicit reviewed route can instead select Qwen3.8 Flash through the
+`qwen-plan` provider. The installed `routing.json` records the exact selected
+route and provider. Do not substitute an upstream vendor name in the role's
+model field. See `sources.md` for the route sources.
+
+## Qwen3.8 Flash setup
+
+The reviewed route is `qwen-plan/qwen3.8-flash`, provided by Alibaba Model
+Studio's plan API. The Router provider uses
+`https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1` and
+accepts the private credential through `./bin/provider-key qwen-plan set` on
+macOS/Linux; on Windows use the Router's documented private credential flow.
+Router documentation also names `QWEN_PLAN_API_KEY`
+and `DASHSCOPE_API_KEY`; credential setup remains outside this package.
+Select the route explicitly with `--worker-route qwen-plan/qwen3.8-flash`.
 
 ## Installation bindings
 
@@ -58,7 +68,7 @@ For the first real delegated task, verify all of the following:
   returns test evidence; Astra reviews the result independently.
 
 When metadata is unavailable, report that inference routing remains unverified.
-A response saying "I am DeepSeek" is not evidence. A green router health check
+A response claiming a model identity is not evidence. A green router health check
 alone is not an end-to-end test. Do not run `subagents certify`, `test-model
 --live`, a smoke test or another paid probe during package installation; the
 user's first approved useful build can establish runtime evidence.

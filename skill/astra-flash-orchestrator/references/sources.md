@@ -24,6 +24,11 @@ Router. Upstream documentation and local client behavior may change independentl
   opencode Go, Command Code, Nous Research and Ollama Cloud.
 - [Codex Router installation guide](https://github.com/duolahypercho/codex-router/blob/main/docs/INSTALL.md):
   health/doctor process and explicit paid smoke-test distinction.
+- [Codex Router Qwen provider configuration](https://github.com/duolahypercho/codex-router/blob/main/config/qwen/qwen.json)
+  and [Qwen3.8 Flash route](https://github.com/duolahypercho/codex-router/blob/main/config/qwen/plan/qwen3.8-flash.json):
+  provider endpoint, credential names, exact route, upstream model and default effort.
+- The Router install guide documents the private `provider-key qwen-plan set`
+  credential prompt on supported platforms.
 - [DeepSeek models](https://api-docs.deepseek.com/quick_start/pricing/): direct API
   name deepseek-flash and the documented V4.1 Flash version association.
 - [OpenRouter DeepSeek V4.1 Flash](https://openrouter.ai/deepseek/deepseek-v4.1-flash):
