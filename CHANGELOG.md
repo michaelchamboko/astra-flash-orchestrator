@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add the explicitly selected `qwen-plan/qwen3.8-flash` worker route with
+  high-effort role pinning and exact local catalog/doctor checks. Keep direct
+  DeepSeek as the default, and make active worker instructions model-neutral.
 - Support explicit, reviewed DeepSeek V4.1 Flash routes through OpenRouter,
   opencode Go, Command Code, Nous Research and Ollama Cloud while retaining the
   direct DeepSeek API as the default. Existing alternate-route installations

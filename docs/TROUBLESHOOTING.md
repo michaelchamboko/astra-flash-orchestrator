@@ -18,6 +18,12 @@ Enter API keys yourself through the Router's private local prompt; never paste
 one into assistant chat. If the route is absent, stop package installation and
 finish provider setup separately.
 
+For Qwen3.8 Flash, configure the Router's `qwen-plan` credential with its
+private prompt (`./bin/provider-key qwen-plan set` on macOS/Linux or
+the Router's documented private credential flow on Windows, from the Router
+installation), then rerun with `--worker-route qwen-plan/qwen3.8-flash`. This
+package neither stores the key nor verifies real inference.
+
 ## Router URL is rejected
 
 Only HTTP(S) loopback URLs are accepted. Supported paths are `/v1` and `/_codex-router/<capability>/v1`, optionally with a trailing slash. Remote endpoints, queries, fragments and embedded URL credentials are rejected. Do not post a private capability URL in an issue.
@@ -46,7 +52,7 @@ This protects later edits, including changes to the shared personal AGENTS file.
 
 Provider usage and real task outcomes determine cost and quality. Offline tests validate installation and planning helpers, not the performance of either model. Request metadata is routing evidence; a worker's self-description is not.
 
-## Flash is visible in the picker but unavailable for delegation
+## The worker route is visible in the picker but unavailable for delegation
 
 The merged catalog must advertise the exact selected route with
 `multi_agent_version: "v2"`. A model entry or default-subagent setting alone is

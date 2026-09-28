@@ -114,6 +114,47 @@ class SetupFixture(unittest.TestCase):
         self.assertEqual(routing['worker_model'], route)
         self.assertEqual(routing['worker_provider'], 'OpenRouter')
 
+    def test_qwen_plan_flash_route_is_pinned_and_active_instructions_are_model_neutral(self):
+        route = 'qwen-plan/qwen3.8-flash'
+        self.set_catalog_route(route)
+        result = self.cli('--worker-route', route, '--apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        role = tomllib.loads((self.codex / 'agents' / f'{ROLE}.toml').read_text())
+        self.assertEqual(role['model'], route)
+        self.assertEqual(role['model_reasoning_effort'], 'high')
+        self.assertIn('installed worker route', role['description'])
+        self.assertNotIn('DeepSeek', role['developer_instructions'])
+        routing = json.loads((self.home / '.agents' / 'skills' / SKILL / 'routing.json').read_text())
+        self.assertEqual(routing['worker_model'], route)
+        self.assertEqual(routing['worker_provider'], 'Qwen (Alibaba Plan)')
+        update = self.cli('--replace', '--apply')
+        self.assertEqual(update.returncode, 0, update.stderr)
+        self.assertIn('no changes needed', update.stdout)
+        self.assertEqual(tomllib.loads((self.codex / 'agents' / f'{ROLE}.toml').read_text())['model'], route)
+
+    def test_qwen_route_requires_exact_catalog_entry_and_native_subagent_support(self):
+        route = 'qwen-plan/qwen3.8-flash'
+        self.set_catalog_route('some-other-route')
+        self.assertEqual(self.cli('--worker-route', route).returncode, 2)
+        self.set_catalog_route(route, 'v1')
+        result = self.cli('--worker-route', route)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('not advertised for native subagents', result.stderr)
+
+    def test_doctor_accepts_qwen_route_only_when_exact_local_catalog_advertises_it(self):
+        route = 'qwen-plan/qwen3.8-flash'
+        self.set_catalog_route(route)
+        result = subprocess.run([sys.executable, str(SCRIPTS / 'doctor.py'), '--home', str(self.home),
+                                 '--codex-home', str(self.codex), '--worker-route', route],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)['worker_effort'], 'high')
+        self.catalog.write_text('{"models": []}')
+        missing = subprocess.run([sys.executable, str(SCRIPTS / 'doctor.py'), '--home', str(self.home),
+                                  '--codex-home', str(self.codex), '--worker-route', route],
+                                 capture_output=True, text=True)
+        self.assertEqual(missing.returncode, 2)
+
     def test_existing_alternate_binding_is_reused_on_update(self):
         route = 'openrouter/deepseek-v4.1-flash'
         self.set_catalog_route(route)
@@ -217,7 +258,7 @@ class SetupFixture(unittest.TestCase):
         route = 'openrouter/deepseek-v4.1-flash'
         self.set_catalog_route(route)
         self.config.write_text(self.config.read_text().replace('fixture-astra-root', route))
-        with self.assertRaisesRegex(SetupError, 'root model is Flash'):
+        with self.assertRaisesRegex(SetupError, 'root model is a worker route'):
             inspect(self.home, self.codex, worker_route=route)
 
     def test_non_loopback_route_fails_without_exposing_url(self):
